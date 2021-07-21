@@ -94,8 +94,56 @@ def test_update_hand():
         print("\tNow the hand looks like this:", handCopy)
         
         return # exit function
-
+    
+    #test 4 Empty String
+    handOrig = {'h': 1, 'e': 1, 'l': 2, 'o': 1}
+    handCopy = handOrig.copy()
+    word = ""
+    
+    hand2 = update_hand(handCopy, word)
+    expected_hand1 = {'h': 1, 'e': 1, 'l': 2, 'o': 1}
+    expected_hand2 = {'h': 1, 'e': 1, 'l': 2, 'o': 1}
+    
+    
+    if hand2 != expected_hand1 and hand2 != expected_hand2:
+        print("FAILURE: test_update_hand('"+ word +"', " + str(handOrig) + ")")                
+        print("\tReturned: ", hand2, "\n\t-- but expected:", expected_hand1, "or", expected_hand2)
+        
+        return # exit function
+   
+    if handCopy != handOrig:
+        print("FAILURE: test_update_hand('"+ word +"', " + str(handOrig) + ")")
+        print("\tOriginal hand was", handOrig)
+        print("\tbut implementation of update_hand mutated the original hand!")
+        print("\tNow the hand looks like this:", handCopy)
+        
+        return # exit function
+    
+    #test 5 Invalid word
+    handOrig = {'h': 1, 'e': 1, 'l': 2, 'o': 1}
+    handCopy = handOrig.copy()
+    word = "help"
+    
+    hand2 = update_hand(handCopy, word)
+    expected_hand1 = { 'l': 1, 'o': 1}
+    expected_hand2 = {'h': 0, 'e': 0, 'l': 1, 'o': 1}
+    
+    
+    if hand2 != expected_hand1 and hand2 != expected_hand2:
+        print("FAILURE: test_update_hand('"+ word +"', " + str(handOrig) + ")")                
+        print("\tReturned: ", hand2, "\n\t-- but expected:", expected_hand1, "or", expected_hand2)
+        
+        return # exit function
+   
+    if handCopy != handOrig:
+        print("FAILURE: test_update_hand('"+ word +"', " + str(handOrig) + ")")
+        print("\tOriginal hand was", handOrig)
+        print("\tbut implementation of update_hand mutated the original hand!")
+        print("\tNow the hand looks like this:", handCopy)
+        
+        return # exit function
     print("SUCCESS: test_update_hand()")
+    
 
 # end of test_update_hand
 
@@ -183,6 +231,49 @@ def test_is_valid_word(word_list):
         
         failure = True        
 
+    # test 7
+    hand = {'n': 1, 'h': 1, 'o': 1, 'y': 1, 'd':1, 'w':1, 'e': 2}
+    word = "sdjnsdknsdfjk"
+
+    if  is_valid_word(word, hand, word_list):
+        print("FAILURE: test_is_valid_word()")
+        print("\tExpected False, but got True for word: '" + word + "' and hand:", hand)
+
+        failure = True 
+        
+     # test 8
+     
+    word = "node"
+    if  not is_valid_word(word, hand, word_list):
+        print("FAILURE: test_is_valid_word()")
+        print("\tExpected True, but got False for word: '" + word + "' and hand:", hand)
+        
+        failure = True
+        
+    # test 9
+    word ="DONE"
+    if  not is_valid_word(word, hand, word_list):
+        print("FAILURE: test_is_valid_word()")
+        print("\tExpected True, but got False for word: '" + word + "' and hand:", hand)
+        
+        failure = True
+        
+    # test 10
+    word = "dew"
+    if  not is_valid_word(word, hand, word_list):
+        print("FAILURE: test_is_valid_word()")
+        print("\tExpected True, but got False for word: '" + word + "' and hand:", hand)
+        
+        failure = True
+        
+    # test 11
+    word = "goal"
+    if  is_valid_word(word, hand, word_list):
+        print("FAILURE: test_is_valid_word()")
+        print("\tExpected False, but got True for word: '" + word + "' and hand:", hand)
+
+        failure = True 
+        
     if not failure:
         print("SUCCESS: test_is_valid_word()")
 

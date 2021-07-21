@@ -16,7 +16,7 @@ CONSONANTS = 'bcdfghjklmnpqrstvwxyz'
 HAND_SIZE = 7
 
 SCRABBLE_LETTER_VALUES = {
-    'a': 1, 'b': 3, 'c': 3, 'd': 2, 'e': 1, 'f': 4, 'g': 2, 'h': 4, 'i': 1, 'j': 8, 'k': 5, 'l': 1, 'm': 3, 'n': 1, 'o': 1, 'p': 3, 'q': 10, 'r': 1, 's': 1, 't': 1, 'u': 1, 'v': 4, 'w': 4, 'x': 8, 'y': 4, 'z': 10
+    '*':0,'a': 1, 'b': 3, 'c': 3, 'd': 2, 'e': 1, 'f': 4, 'g': 2, 'h': 4, 'i': 1, 'j': 8, 'k': 5, 'l': 1, 'm': 3, 'n': 1, 'o': 1, 'p': 3, 'q': 10, 'r': 1, 's': 1, 't': 1, 'u': 1, 'v': 4, 'w': 4, 'x': 8, 'y': 4, 'z': 10
 }
 
 # -----------------------------------
@@ -91,8 +91,33 @@ def get_word_score(word, n):
     n: int >= 0
     returns: int >= 0
     """
-    
-    pass  # TO DO... Remove this line when you implement this function
+    def sum_words():
+            """ 
+            Calculates the score for the first component of word formed
+            word : String
+            returns: Integer
+            
+            """
+            assert isinstance(word, str), "Word should be a string"
+            
+            score = 0
+            for x in word.lower():
+                
+                score += SCRABBLE_LETTER_VALUES[x]
+                
+            return score
+        
+    assert n >= 0, "n should be greater than 0"
+        
+    comp_one = sum_words()
+    comp_two = 7*len(word) - 3*(n- len(word))
+        
+    if comp_two < 1:
+        return comp_one
+    else:
+        return comp_one * comp_two            
+                
+                
 
 #
 # Make sure you understand how this function works and what it does!
@@ -113,7 +138,7 @@ def display_hand(hand):
     for letter in hand.keys():
         for j in range(hand[letter]):
              print(letter, end=' ')      # print all on the same line
-    print()                              # print an empty line
+    #print()                              # print an empty line
 
 #
 # Make sure you understand how this function works and what it does!
@@ -136,13 +161,15 @@ def deal_hand(n):
     hand={}
     num_vowels = int(math.ceil(n / 3))
 
-    for i in range(num_vowels):
+    for i in range(num_vowels - 1):
         x = random.choice(VOWELS)
         hand[x] = hand.get(x, 0) + 1
     
     for i in range(num_vowels, n):    
         x = random.choice(CONSONANTS)
         hand[x] = hand.get(x, 0) + 1
+    
+    hand["*"] = 1
     
     return hand
 
@@ -167,10 +194,24 @@ def update_hand(hand, word):
     hand: dictionary (string -> int)    
     returns: dictionary (string -> int)
     """
+    assert isinstance(hand, dict) and isinstance(word, str), "Invalid input for parameters"
+    
+    hand_copy = dict(hand) #make a copy of hand
+    
+    for x in word.lower():
+        try:
+            if hand_copy[x] == 1:
+                del(hand_copy[x])
+                
+            else:
+                hand_copy[x] -= 1
+                
+        except KeyError:
+            print("the letter", x, "is not in the hand")
 
-    pass  # TO DO... Remove this line when you implement this function
-
-#
+    #print(hand_copy, "is hand_copy")
+    return hand_copy
+#   
 # Problem #3: Test word validity
 #
 def is_valid_word(word, hand, word_list):
@@ -184,9 +225,32 @@ def is_valid_word(word, hand, word_list):
     word_list: list of lowercase strings
     returns: boolean
     """
+    ast_index = word.lower().find("*")
+    if  ast_index== -1:
 
-    pass  # TO DO... Remove this line when you implement this function
-
+        if word.lower() not in word_list:
+            return False
+    else:
+        not_valid = True
+        
+        for x in VOWELS:
+            if word[:ast_index] + x + word[ast_index+1:] in word_list:
+                not_valid = False
+        
+        if not_valid:
+            return False
+    
+    hand_copy = hand.copy()
+        
+    for x in word.lower():
+        if hand_copy.get(x,0) == 0:
+            return False
+        else:
+            hand_copy[x] -= 1
+        
+    return True
+    
+    
 #
 # Problem #5: Playing a hand
 #
@@ -197,8 +261,11 @@ def calculate_handlen(hand):
     hand: dictionary (string-> int)
     returns: integer
     """
+    total = 0
+    for x in hand.keys():
+        total += hand[x]
     
-    pass  # TO DO... Remove this line when you implement this function
+    return total
 
 def play_hand(hand, word_list):
 
@@ -230,8 +297,7 @@ def play_hand(hand, word_list):
       returns: the total score for the hand
       
     """
-    
-    # BEGIN PSEUDOCODE <-- Remove this comment when you implement this function
+     # BEGIN PSEUDOCODE <-- Remove this comment when you implement this function
     # Keep track of the total score
     
     # As long as there are still letters left in the hand:
@@ -263,6 +329,34 @@ def play_hand(hand, word_list):
 
     # Return the total score as result of function
 
+    total_score = 0
+    while len(hand.keys()) > 0:
+        
+        print("Current Hand:", end=" ")
+        display_hand(hand)
+        word = input('Enter word, or "!!" to indicate that you are finished: ')
+        
+        if word == "!!":
+            break;
+            
+        if is_valid_word(word, hand, word_list):
+            score = get_word_score(word,len(hand.keys()))
+            total_score += score
+            print('"'+word+'"', "earned ", score, "points. Total score:", total_score)
+            
+        else:
+            print("That is not a valid word. Please choose another word.")
+        print()
+        
+        hand = update_hand(hand, word)    
+      
+    if(len(hand.keys()) == 0):
+        print("Ran out of letters.", end=" ")
+    print("Total score is", total_score)
+
+    return total_score     
+            
+   
 
 
 #
@@ -296,9 +390,28 @@ def substitute_hand(hand, letter):
     letter: string
     returns: dictionary (string -> int)
     """
+    #Check if letter in keys 
+        #if not then return hand 
+        #otherwise replace 
+        
+    key = hand.keys()
+    hand_copy = hand.copy()
     
-    pass  # TO DO... Remove this line when you implement this function
-       
+    if letter in key:
+        new_letter = ""
+        found_let = False
+        
+        while not found_let:
+            new_letter = random.choice(VOWELS + CONSONANTS)
+            
+            if new_letter not in key:
+                found_let = True
+        
+        value = hand_copy[letter]
+        del hand_copy[letter]
+        hand_copy[new_letter] = value
+        
+    return hand_copy
     
 def play_game(word_list):
     """
@@ -330,11 +443,40 @@ def play_game(word_list):
 
     word_list: list of lowercase strings
     """
+    series_score = 0
+    try:
+        no_hands = int(input("Enter total number of hands:"))
+    except ValueError:
+        print("Invalid input: expected an int")
+        return 
     
-    print("play_game not implemented.") # TO DO... Remove this line when you implement this function
+    while no_hands > 0: 
+        
+        hand = deal_hand(HAND_SIZE)
+        print("Current hand:", end = " ")
+        display_hand(hand)
+        sub = input("Would you like to substitute a letter?")
+        
+        if sub.lower().strip() == "yes":
+            letter = input("Which letter would you like to replace:")
+            hand = substitute_hand(hand, letter)
+        
+        print()
+        score = play_hand(hand, word_list)
+        print("--------------")
+        replay = input("Would you like to replay the hand?")
+        
+        if replay == "yes":
+            series_score += max(score, play_hand(hand, word_list))
+        else:
+            series_score += score
+            
+        print()
+        no_hands -= 1
     
-
-
+    print("--------------")
+    print("Total score over all hands:", series_score)
+        
 #
 # Build data structures used for entire session and play game
 # Do not remove the "if __name__ == '__main__':" line - this code is executed

@@ -77,3 +77,54 @@ def binary_search(array, val):
 
 test = range(2**31 -1)
 print(binary_search(test, 2**31 - 2))
+
+
+
+#Finger excerciise
+def sumDigits(s):
+    """Assumes s is a string
+    Returns the sum of the decimal digits in s
+    For example, if s is 'a2b3c' it returns 5"""
+    
+    sum=0
+    for x in s:
+        try:
+            sum += int(x)
+        except ValueError:
+            continue
+    
+    return sum
+
+
+
+def findAnEven(L):
+    """
+    
+
+    Parameters
+    ----------
+    L : List
+        List of numbers(float and int).
+
+    Raises
+    ------
+    ValueError
+        If none of the inputs in L is an integer.
+
+    Returns
+    -------
+     int
+        The first integer encoutered in L.
+
+    """
+    for x in L:
+        try:
+            assert type(x)== int, "found a non-int value"
+            if x % 2 == 0:
+                return x
+            
+        except TypeError:
+            print("Input", x , "is not an integer")
+    
+    raise ValueError("No integer was found")
+    
