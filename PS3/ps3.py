@@ -466,7 +466,7 @@ def play_game(word_list):
         print("--------------")
         replay = input("Would you like to replay the hand?")
         
-        if replay == "yes":
+        if replay.lower().strip() == "yes":
             series_score += max(score, play_hand(hand, word_list))
         else:
             series_score += score
